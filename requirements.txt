@@ -1,0 +1,12 @@
+groq
+python-dotenv
+flask
+flask-restful
+pyodbc
+pandas
+sqlalchemy
+tabulate
+Pylance
+flask_sqlalchemy
+flask-cors
+pathlib
