@@ -15,3 +15,13 @@ def text_to_sql(client, system_prompt, user_question):
         ]
     )
     return completion.choices[0].message.content
+
+def parse_sql(gen_sql):
+    # finding the position of '```' and removing the '```' and the newlines
+    start = gen_sql.find("```sql") + len("```\n")
+    # finding position of ending '```' and removing the '```'
+    end = gen_sql.rfind("```")
+    # apply strip method on input_string
+    out_string = gen_sql[start+2:end].strip()
+    # print(f"OUTPUT STRING {out_string}") # for debugging only
+    return out_string

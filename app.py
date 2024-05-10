@@ -1,5 +1,6 @@
 from insurance_sql_prompt import sql_prompt
-from generate_response_2_llm import text_to_sql
+from generate_response_2_llm import text_to_sql, parse_sql
+from run_sql import execute_query_df_no_json
 from groq import Groq
 import os
 from dotenv import load_dotenv, find_dotenv
@@ -19,5 +20,11 @@ client = Groq(
 user_question = "List all policies for Account number=10000 and their effective dates"
 
 llm_response = text_to_sql(client=client, system_prompt=sql_prompt, user_question=user_question)
-print(llm_response)
+# print(llm_response)
 
+
+generated_SQL = parse_sql(llm_response)
+# print(generated_SQL)
+
+data = execute_query_df_no_json(generated_SQL)
+print(data)
