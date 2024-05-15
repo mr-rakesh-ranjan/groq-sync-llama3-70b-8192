@@ -9,4 +9,5 @@ tabulate
 Pylance
 flask_sqlalchemy
 flask-cors
+replicate
 pathlib

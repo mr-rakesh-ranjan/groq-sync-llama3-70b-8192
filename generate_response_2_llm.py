@@ -1,12 +1,27 @@
+from insurance_sql_prompt import sql_prompt
+from groq import Groq
+import os
+from dotenv import load_dotenv, find_dotenv
+
+# load dotenv 
+load_dotenv(find_dotenv())
+groq_api_key = os.getenv('GROQ_API_KEY')
+
+# define client as Groq
+client = Groq(
+    api_key=groq_api_key
+)
+
+
 # define a text_to_sql function which takes in the system prompt and the user's question and outputs the LLM-generated Ms-SQL query. Note that since we are using Groq API's JSON mode to format our output, we must indicate our expected JSON output format in either the system or user prompt.
-def text_to_sql(client, system_prompt, user_question):
+def generate_sql_2_groq(user_question):
     completion = client.chat.completions.create(
         model="llama3-70b-8192",
         # response_format = {"type": "json_object"},
         messages=[
             {
                 "role": "system",
-                "content": system_prompt
+                "content": sql_prompt
             },
             {
                 "role": "user",
@@ -16,12 +31,39 @@ def text_to_sql(client, system_prompt, user_question):
     )
     return completion.choices[0].message.content
 
-def parse_sql(gen_sql):
+def parse_sql_updated(gen_sql):
     # finding the position of '```' and removing the '```' and the newlines
-    start = gen_sql.find("```sql") + len("```\n")
+    start = gen_sql.find("```") + len("```\n")
     # finding position of ending '```' and removing the '```'
     end = gen_sql.rfind("```")
     # apply strip method on input_string
-    out_string = gen_sql[start+2:end].strip()
+    out_string = gen_sql[start:end].strip()
     # print(f"OUTPUT STRING {out_string}") # for debugging only
     return out_string
+
+def explain_result(sql_prompt, sql_result):
+    user_prompt = f"""Summarize the results from the SQL query in less than or up to four sentences. 
+    The result is an output from the following query: {sql_prompt}.
+    Result: {sql_result}. 
+    In the response, do not mention database-related words like SQL, rows, timestamps, etc."""
+
+    completions = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": user_prompt,
+        }
+    ],
+    model="llama3-70b-8192",
+    )
+    explanation = completions.choices[0].message.content
+    
+    
+    result_summary = explanation
+    result_list = None
+
+    # if "list" in sql_prompt.lower():
+    #     result_list = sql_result.to_json(orient='records')
+        
+    print(explanation)
+    return result_summary, result_list  
