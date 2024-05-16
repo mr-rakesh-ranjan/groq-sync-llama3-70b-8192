@@ -1,21 +1,37 @@
-from generate_response_2_llm import generate_sql_2_groq, parse_sql_updated, explain_result
+# restAPI for applications
+from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
+import datetime as dt
 from run_sql import execute_query_df_json
+import json as js
+
+
+app = Flask(__name__)
+cors = CORS(app=app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
+# for debugging only
+@app.route('/', methods = ['GET', 'POST'])
+@cross_origin()
+def home():
+    if(request.method == 'GET'):
+        data = "Hello world"
+        return jsonify({'data' : data})
+    
+
+# api for getting customer details
+@app.route('/api/v1/get-customer-details/<accountNumber>', methods = ['GET'])
+@cross_origin()
+def getAccountDetails(accountNumber):
+    try:
+        query = f"SELECT * FROM [dbo].[customer] WHERE account_number = {int(accountNumber)} "
+        res = js.loads(execute_query_df_json(query))
+        return res[0]
+    except Exception as e:
+        print(e)
 
 
 
-# user question 
-# user_qestion = "Show me the Claims with more than 10000 Total expenses"
-user_question = "List all policies for Account number=10000 and their effective dates"
-
-llm_response = generate_sql_2_groq(user_question=user_question)
-print(llm_response)
-
-
-generated_SQL = parse_sql_updated(llm_response)
-# print(generated_SQL)
-
-data = execute_query_df_json(generated_SQL)
-print(data)
-
-res = explain_result(sql_prompt=user_question, sql_result=data)
-print(res)
+if __name__ == '__main__':
+    app.run(debug=True)
