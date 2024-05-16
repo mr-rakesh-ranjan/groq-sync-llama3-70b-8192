@@ -10,4 +10,8 @@ Pylance
 flask_sqlalchemy
 flask-cors
 replicate
+
+# below three are required for deployment
 pathlib
+gunicorn 
+importlib-metadata
