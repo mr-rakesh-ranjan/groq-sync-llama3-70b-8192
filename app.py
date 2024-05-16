@@ -19,17 +19,3 @@ print(data)
 
 res = explain_result(sql_prompt=user_question, sql_result=data)
 print(res)
-
-# while(True):
-#     # user question 
-#     user_question = input("Enter your question: ")
-#     exit = ['Q', 'q', 'Quit', 'quit' 'exits', 'exit']
-#     if user_question in exit:
-#         break
-#     else:
-#         try:
-#             llm_response = text_to_sql(client=client, system_prompt=sql_prompt, user_question=user_question)
-#             generated_SQL = parse_sql(llm_response)
-#             print(execute_query_df_no_json(generated_SQL))
-#         except Exception as e:
-#             print(e)

@@ -16,7 +16,7 @@ replicate = replicate.Client(api_token=replicate_token)
 # for debugging only
 user_prompt = "List all policies for Account number=10000 and their effective dates"
 
-def generate_SQL_2_replicate(user_prompt) -> str:
+def generate_SQL_replicate(user_prompt) -> str:
     input ={
         "prompt": f" {sql_prompt} Work through this problem step by step: \n\nQ: , {user_prompt} ?",
         "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
@@ -37,7 +37,8 @@ def generate_SQL_2_replicate(user_prompt) -> str:
 import pandas as pd
 import json
 
-def explain_result(sql_prompt, sql_result):
+# testing for this function is remaining due to the free trails is expired.
+def explain_result_replicate(sql_prompt, sql_result):
     user_prompt = f"""Summarize the results from the SQL query in less than or up to four sentences. 
     The result is an output from the following query: {sql_prompt}.
     Result: {sql_result}. 

@@ -14,7 +14,7 @@ client = Groq(
 
 
 # define a text_to_sql function which takes in the system prompt and the user's question and outputs the LLM-generated Ms-SQL query. Note that since we are using Groq API's JSON mode to format our output, we must indicate our expected JSON output format in either the system or user prompt.
-def generate_sql_2_groq(user_question):
+def generate_sql_groq(user_question):
     completion = client.chat.completions.create(
         model="llama3-70b-8192",
         # response_format = {"type": "json_object"},
@@ -41,7 +41,7 @@ def parse_sql_updated(gen_sql):
     # print(f"OUTPUT STRING {out_string}") # for debugging only
     return out_string
 
-def explain_result(sql_prompt, sql_result):
+def explain_result_groq(sql_prompt, sql_result):
     user_prompt = f"""Summarize the results from the SQL query in less than or up to four sentences. 
     The result is an output from the following query: {sql_prompt}.
     Result: {sql_result}. 
