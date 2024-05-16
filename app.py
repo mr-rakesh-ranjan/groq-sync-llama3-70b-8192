@@ -21,7 +21,7 @@ def home():
     
 
 # api for getting customer details
-@app.route('/api/v1/get-customer-details/<accountNumber>', methods = ['GET'])
+@app.route('/api/v1/sql/get-customer-details/<accountNumber>', methods = ['GET'])
 @cross_origin()
 def getAccountDetails(accountNumber):
     try:
@@ -31,7 +31,25 @@ def getAccountDetails(accountNumber):
     except Exception as e:
         print(e)
 
+# all policies of a particular customer
+# @app.route('/api/v1/sql/get-customer-polices/<accountNumber>', methods = ['GET'])
 
+
+# @app.route('/api/v1/get-policy-details/<accountNumber>/<policyNumber>', methods = ['GET'])
+@app.route('/api/v1/sql/get-policy-details')
+@cross_origin
+def getPolicyDetails(self):
+    if request.method == 'GET':
+        # query = f"SELECT * FROM [dbo].[PolicyDetails] WHERE PolicyNumber = {str(policyNumber)} and AccountNumber = {int(accountNumber)};"
+        query = "SELECT * FROM [dbo].[PolicyDetails] WHERE PolicyNumber = 'mdy-3402747' and AccountNumber = 10001; "
+        res = execute_query_df_json(query)
+        return res
+
+# llm genereates method
+
+# @app.route('/api/v1/llm/prompt-results/<accountNumber>', methods = ['GET'])
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    
