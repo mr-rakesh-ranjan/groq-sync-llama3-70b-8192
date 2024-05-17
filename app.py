@@ -4,6 +4,7 @@ from flask_cors import CORS, cross_origin
 import datetime as dt
 from run_sql import execute_query_df_json
 import json as js
+from generate_response_llm import generateResponseGroq
 
 
 app = Flask(__name__)
@@ -32,9 +33,16 @@ def getAccountDetails(accountNumber):
         print(e)
 
 # all policies of a particular customer
-# @app.route('/api/v1/sql/get-customer-polices/<accountNumber>', methods = ['GET'])
+@app.route('/api/v1/sql/get-customer-policies/<accountNumber>', methods=['GET'])
+def getCustomerPolicies(accountNumber):
+    try:
+        query = f"SELECT PolicyNumber, ExpirationDate, EffectiveDate,PolicyStatus FROM [dbo].[PolicyDetails] WHERE accountNumber = {int(accountNumber)};"
+        res = js.loads(execute_query_df_json(query))
+        return res
+    except Exception as e:
+        print(e)
 
-
+# pending
 # @app.route('/api/v1/get-policy-details/<accountNumber>/<policyNumber>', methods = ['GET'])
 @app.route('/api/v1/sql/get-policy-details')
 @cross_origin
@@ -47,7 +55,29 @@ def getPolicyDetails(self):
 
 # llm genereates method
 
-# @app.route('/api/v1/llm/prompt-results/<accountNumber>', methods = ['GET'])
+# @app.route('/api/v1/llm/prompt-results/<accountNumber>', methods = ['GET', 'POST'])
+# @app.route("/api/v1/llm/prompt-results/<accountNumber>", methods=['POST'])
+# @cross_origin
+# def generateResponse(accountNumber):
+#     if request.method == 'POST':
+#         data = request.get_json(force=True)
+#         userQuery = data['user_query']
+#         try:
+#             return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+#         except Exception as e:
+#             print(e)
+#     else:
+#         return "Please use POST method"
+
+@app.route(rule='/api/v1/llm/prompt-results/<accountNumber>', methods=['POST'])
+def generateResponse(accountNumber):
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        userQuery = data['user_query']
+        return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+    else:
+        return "Please use POST method"
+
 
 if __name__ == '__main__':
     app.run(debug=True)

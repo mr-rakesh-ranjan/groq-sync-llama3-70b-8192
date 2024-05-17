@@ -37,9 +37,31 @@ def parse_sql_updated(gen_sql):
     # finding position of ending '```' and removing the '```'
     end = gen_sql.rfind("```")
     # apply strip method on input_string
-    out_string = gen_sql[start:end].strip()
+    out_string = gen_sql[start+2:end].strip()
     # print(f"OUTPUT STRING {out_string}") # for debugging only
     return out_string
+
+def parse_sql_new(gen_sql):
+    if '```sql' in gen_sql:
+        print("counter")
+        # finding the position of '```' and removing the '```' and the newlines
+        start = gen_sql.find("```sql") + len("```\n")
+        # finding position of ending '```' and removing the '```'
+        end = gen_sql.rfind("```")
+        # apply strip method on input_string
+        out_string = gen_sql[start:end].strip()
+        # print(f"OUTPUT STRING {out_string}") # for debugging only
+        return out_string
+    else:
+        print("reloader")
+        # finding the position of '```' and removing the '```' and the newlines
+        start = gen_sql.find("```") + len("```\n")
+        # finding position of ending '```' and removing the '```'
+        end = gen_sql.rfind("```")
+        # apply strip method on input_string
+        out_string = gen_sql[start:end].strip()
+        # print(f"OUTPUT STRING {out_string}") # for debugging only
+        return out_string
 
 def explain_result_groq(sql_prompt, sql_result):
     user_prompt = f"""Summarize the results from the SQL query in less than or up to four sentences. 
