@@ -49,7 +49,7 @@ def parse_sql_new(gen_sql):
         # finding position of ending '```' and removing the '```'
         end = gen_sql.rfind("```")
         # apply strip method on input_string
-        out_string = gen_sql[start:end].strip()
+        out_string = gen_sql[start+2:end].strip()
         # print(f"OUTPUT STRING {out_string}") # for debugging only
         return out_string
     else:
@@ -80,12 +80,5 @@ def explain_result_groq(sql_prompt, sql_result):
     )
     explanation = completions.choices[0].message.content
     
-    
-    result_summary = explanation
-    result_list = None
-
-    # if "list" in sql_prompt.lower():
-    #     result_list = sql_result.to_json(orient='records')
-        
-    print(explanation)
-    return result_summary, result_list  
+    # print(explanation) # for debugging only
+    return explanation  

@@ -9,51 +9,38 @@ sql_prompt = """
         Make sure that the generate SQL has an alias for calculated fields.
         Pay attention to use CAST(GETDATE() as date) function to get the current date, if the question involves "today", "tomorrow", or "yesterday".
 
-        CREATE TABLE [dbo].[Agency](
-            [pkAgency] [int] not NULL,
-            [AgencyID] [varchar](7) NULL,
-            [MasterAgencyID] [varchar](7) NULL,
-            [AgencyStatusCode] [varchar](2) NULL,
-            [MasterAgencyInd] [varchar](1) NULL,
-            [AgencyName] [varchar](30) NULL,
-            [AppointedDate] [datetime] NULL,
-            [Addressline1] [varchar](126) NULL,
-            [City] [varchar](126) NULL,
-            [County] [varchar](126) NULL,
-            [zipcode] [varchar](5) NULL,
-            [State] [varchar](25) NULL,
-            [Business_ContactNumber] [varchar](256) NULL,
-            [Fax_number] [varchar](256) NULL,
-            [Email_Address] [varchar](256) NULL,
-            [Website_Address] [varchar](256) NULL,
+        CREATE TABLE [dbo].[Segments](
+            [segment_id] [int] NOT NULL,
+            [name] [varchar](255) NOT NULL,
+            [description] [text] NULL,
         PRIMARY KEY CLUSTERED 
         (
-                pkagency ASC
-        )
-        ) ON [PRIMARY]
-        GO
-        ;
+            [segment_id] ASC
+        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-        CREATE TABLE [dbo].[AgencySegmentDetails](
-            ID int identity(1,1) not null,
-            [pkAgency] [int] not NULL,
-            [Segmentcd] [varchar](7) NULL,
-            [SegmentName] [varchar](126) NULL,
-            [LineofBusiness] [varchar](256) NULL,
+
+
+        CREATE TABLE [dbo].[Lines_of_Business](
+            [lob_id] [int] NOT NULL,
+            [segment_id] [int] NULL,
+            [name] [varchar](255) NOT NULL,
+            [description] [text] NULL,
         PRIMARY KEY CLUSTERED 
         (
-            ID ASC
-        ),
-        FOREIGN KEY (PKAGENCY) REFERENCES Agency (pkagency)
-        ) ON [PRIMARY]
-
+            [lob_id] ASC
+        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
         GO
-        ;
 
+        ALTER TABLE [dbo].[Lines_of_Business]  WITH CHECK ADD FOREIGN KEY([segment_id])
+        REFERENCES [dbo].[Segments] ([segment_id])
+        GO
+        
         CREATE TABLE [dbo].[PolicyDetails](
-            PolicyID [int] IDENTITY(1,1) NOT NULL,
-            [pkAgency] [int] not NULL,
-            [LineofBusiness] [varchar](256) NULL,
+            [PolicyID] [int] IDENTITY(1,1) NOT NULL,
+            [pkAgency] [int] NOT NULL,
+            [LineofBusiness] [int] NULL,
             [PolicyNumber] [varchar](25) NULL,
             [TermNumber] [varchar](10) NULL,
             [EffectiveDate] [datetime] NULL,
@@ -69,17 +56,68 @@ sql_prompt = """
             [Installment_Term] [char](3) NULL,
             [NumberOfInstallments] [varchar](50) NULL,
             [PolicyStatus] [varchar](50) NULL,
-            [Premium] decimal(32,2) null,
-            [TotalPremiumPaid] decimal(32,2) null,
-            [PremiumBalance] decimal(32,2) null,
-            [PremiumDueDate] datetime null
+            [Premium] [decimal](32, 2) NULL,
+            [TotalPremiumPaid] [decimal](32, 2) NULL,
+            [PremiumBalance] [decimal](32, 2) NULL,
+            [PremiumDueDate] [datetime] NULL,
         PRIMARY KEY CLUSTERED 
         (
-            policyid ASC
-        ),
-        FOREIGN KEY (PKAGENCY) REFERENCES Agency (pkagency)
+            [PolicyID] ASC
+        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
         ) ON [PRIMARY]
-        ;
+        GO
+
+        ALTER TABLE [dbo].[PolicyDetails]  WITH CHECK ADD FOREIGN KEY([pkAgency])
+        REFERENCES [dbo].[Agency] ([pkAgency])
+        GO
+
+        ALTER TABLE [dbo].[PolicyDetails]  WITH CHECK ADD  CONSTRAINT [FK_PolicyDetails_Lines_of_Business] FOREIGN KEY([LineofBusiness])
+        REFERENCES [dbo].[Lines_of_Business] ([lob_id])
+        GO
+
+        ALTER TABLE [dbo].[PolicyDetails] CHECK CONSTRAINT [FK_PolicyDetails_Lines_of_Business]
+        GO
+
+
+
+        CREATE TABLE [dbo].[Coverage_Types](
+            [coverage_type_id] [int] NOT NULL,
+            [line_of_business] [int] NOT NULL,
+            [description] [text] NULL,
+        PRIMARY KEY CLUSTERED 
+        (
+            [coverage_type_id] ASC
+        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+        GO
+
+        ALTER TABLE [dbo].[Coverage_Types]  WITH CHECK ADD FOREIGN KEY([line_of_business])
+        REFERENCES [dbo].[Lines_of_Business] ([lob_id])
+
+
+
+
+
+        CREATE TABLE [dbo].[Coverages](
+            [coverage_id] [int] NOT NULL,
+            [policy_id] [int] NOT NULL,
+            [coverage_type_id] [int] NOT NULL,
+            [limit] [decimal](32, 2) NULL,
+            [deductible] [decimal](32, 2) NULL,
+        PRIMARY KEY CLUSTERED 
+        (
+            [coverage_id] ASC
+        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+        ) ON [PRIMARY]
+        GO
+
+        ALTER TABLE [dbo].[Coverages]  WITH CHECK ADD FOREIGN KEY([coverage_type_id])
+        REFERENCES [dbo].[Coverage_Types] ([coverage_type_id])
+        GO
+
+        ALTER TABLE [dbo].[Coverages]  WITH CHECK ADD FOREIGN KEY([policy_id])
+        REFERENCES [dbo].[PolicyDetails] ([PolicyID])
+        GO
 
         CREATE TABLE [dbo].[ClaimDetails](
             ClaimID [int] IDENTITY(1,1) NOT NULL,

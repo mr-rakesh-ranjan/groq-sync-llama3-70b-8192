@@ -22,7 +22,6 @@ def execute_query_df_json(sql_in):
         # print(f'Dataframe \n\n {df}')
         data = df.to_json(indent=4, date_format='iso' ,index=False, orient='records')
         # print(data)
-    # return df.to_markdown(index=False)
     return df.to_json(indent=4, date_format='iso' ,index=False, orient='records')
 
 def execute_query_df_no_json(sql_in):

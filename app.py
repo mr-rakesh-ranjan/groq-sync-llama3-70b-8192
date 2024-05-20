@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 import datetime as dt
 from run_sql import execute_query_df_json
 import json as js
-from generate_response_llm import generateResponseGroq
+from generate_response_llm import generateResponseGroq, generateActionResponseGroq
 
 
 app = Flask(__name__)
@@ -23,7 +23,6 @@ def home():
 
 # api for getting customer details
 @app.route('/api/v1/sql/get-customer-details/<accountNumber>', methods = ['GET'])
-@cross_origin()
 def getAccountDetails(accountNumber):
     try:
         query = f"SELECT * FROM [dbo].[customer] WHERE account_number = {int(accountNumber)} "
@@ -55,26 +54,22 @@ def getPolicyDetails(self):
 
 # llm genereates method
 
-# @app.route('/api/v1/llm/prompt-results/<accountNumber>', methods = ['GET', 'POST'])
-# @app.route("/api/v1/llm/prompt-results/<accountNumber>", methods=['POST'])
-# @cross_origin
-# def generateResponse(accountNumber):
-#     if request.method == 'POST':
-#         data = request.get_json(force=True)
-#         userQuery = data['user_query']
-#         try:
-#             return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
-#         except Exception as e:
-#             print(e)
-#     else:
-#         return "Please use POST method"
-
 @app.route(rule='/api/v1/llm/prompt-results/<accountNumber>', methods=['POST'])
 def generateResponse(accountNumber):
     if request.method == 'POST':
         data = request.get_json(force=True)
         userQuery = data['user_query']
         return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+    else:
+        return "Please use POST method"
+    
+
+@app.route('/api/v1/llm/enhance-result/<accountNumber>', methods=['POST'])
+def generateActionResponse(accountNumber):
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        userQuery = data['user_query']
+        return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
 
