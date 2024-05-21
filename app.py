@@ -41,14 +41,11 @@ def getCustomerPolicies(accountNumber):
     except Exception as e:
         print(e)
 
-# pending
-# @app.route('/api/v1/get-policy-details/<accountNumber>/<policyNumber>', methods = ['GET'])
-@app.route('/api/v1/sql/get-policy-details')
-@cross_origin
-def getPolicyDetails(self):
+# show more details of particular policy number
+@app.route('/api/v1/sql/policy-details/<policyNumber>', methods = ['GET'])
+def getPolicyDetails(policyNumber):
     if request.method == 'GET':
-        # query = f"SELECT * FROM [dbo].[PolicyDetails] WHERE PolicyNumber = {str(policyNumber)} and AccountNumber = {int(accountNumber)};"
-        query = "SELECT * FROM [dbo].[PolicyDetails] WHERE PolicyNumber = 'mdy-3402747' and AccountNumber = 10001; "
+        query = f"SELECT * FROM [dbo].[PolicyDetails] WHERE PolicyNumber = '{str(policyNumber)}';"
         res = execute_query_df_json(query)
         return res
 
@@ -72,6 +69,17 @@ def generateActionResponse(accountNumber):
         return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
+    
+
+@app.route('/api/v1/llm/<policyNumber>/<accountNumber>/coverage-details', methods=['GET'])
+def generateCoverageDetails(policyNumber, accountNumber):
+    if request.method == 'GET':
+        prompt = request.args['prompt']
+        # print(prompt) # for debugging only
+        requestedPrompt = f"{prompt} whose policy number is {policyNumber}"
+        return generateActionResponseGroq(userPrompt=requestedPrompt, accountNumber=accountNumber)
+
+
 
 
 if __name__ == '__main__':

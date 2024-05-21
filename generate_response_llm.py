@@ -35,29 +35,30 @@ def enhance_policy_data(sqlQuery, data):
     if "SELECT" in sqlQuery and "[dbo].[PolicyDetails]" in sqlQuery:
         # Add the actions to each policy in the data list
         for policy in data:
-            if 'PolicyNumber' in policy:
+            if 'PolicyNumber' and 'PremiumBalance' in policy:
                 policyNumber = policy['PolicyNumber']
-                print(policyNumber)
-                policy['actions'] = createDynamicActions(policyNumber=policyNumber)
+                premiumBalance = policy['PremiumBalance']
+                # print(policyNumber) # for debugging only
+                policy['actions'] = createDynamicActions(policyNumber=policyNumber,premiumBalance=premiumBalance )
             else:
                 return data
     # Return the modified list of dictionaries
     return data
 
-def createDynamicActions(policyNumber):
+def createDynamicActions(policyNumber, premiumBalance):
     actions = [
         {
-            'label': 'Pay',
-            'url': f'/insuranceapplication/policy/pay/{policyNumber}'
-        },
-        {
-            'label': 'Show more Details',
-            'url': f'api/v1/llm?prompt=show details of policy {policyNumber}'
-        },
-        {
-            'label': 'Show Coverage',
-            'url': f'/api/v1/sql/policy/coverage/{policyNumber}'
-        }
+			'label':'Pay',
+			'url': f'https://zohosecurepay.com/checkout/45sm9zp-3rmtgxcc9el2bm/Invoice-Payment?amount={premiumBalance}',
+		},
+		{  
+			'label':'Show more Details' ,
+			'url': f'/api/v1/sql/policy-details/{policyNumber}'
+		},
+		{ 
+			'label':'Show Coverage',
+			'url': '/api/v1/llm/polocyno/?prompt= show details of policy 12323232'
+		}
     ]
     return actions
 

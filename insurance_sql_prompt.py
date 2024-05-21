@@ -8,7 +8,9 @@ sql_prompt = """
         Pay attention to use only the column names you can see in the table below. Be careful to not query for columns that do not exist.
         Make sure that the generate SQL has an alias for calculated fields.
         Pay attention to use CAST(GETDATE() as date) function to get the current date, if the question involves "today", "tomorrow", or "yesterday".
-
+        Pay attention, Whenever user ask for Policy details, you must have to return the following columns from PolicyDetails table. The columns are - [PolicyNumber],[EffectiveDate],[ExpirationDate],[Premium],[TotalPremiumPaid],[PremiumBalance]
+        
+        These are the table details for Insurance db.
         CREATE TABLE [dbo].[Segments](
             [segment_id] [int] NOT NULL,
             [name] [varchar](255) NOT NULL,
