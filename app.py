@@ -5,7 +5,9 @@ import datetime as dt
 from run_sql import execute_query_df_json
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
-from generate_response_llm_replicate import generateResponseReplicate, generateActionResponseReplicate
+from generate_response_llm_replicate import generateResponseReplicate,generateActionResponseReplicate
+from generate_response_llm_gemini import generateResponseGemini, generateActionResponseGemini
+
 from dotenv import load_dotenv, find_dotenv
 import os
 # load dotenv 
@@ -65,6 +67,8 @@ def generateResponse(accountNumber):
             return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
         if(genai_provider == 'REPLICATE'):
             return generateResponseReplicate(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'GEMINI'):
+            return generateResponseGemini(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
     
@@ -80,6 +84,9 @@ def generateActionResponse(accountNumber):
         if(genai_provider == 'REPLICATE'):
             # print("rep") # for debugging only
             return generateActionResponseReplicate(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'GEMINI'):
+                # print("gem") # for debugging only
+            return generateActionResponseGemini(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
     
@@ -93,7 +100,7 @@ def generateCoverageDetails(policyNumber, accountNumber):
         return data
     else:
         return jsonify({'Error' : "Method Not Allowed"})
-    
+        
 
 @app.route('/api/v1/sql/<policyNumber>/<accountNumber>/premium-amount', methods=['GET'])
 def getPremiumAmount(accountNumber, policyNumber):

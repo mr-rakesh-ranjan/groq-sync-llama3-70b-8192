@@ -11,33 +11,6 @@ sql_prompt = """
         Pay attention, Whenever user ask for Policy details, you must have to return the following columns from PolicyDetails table. The columns are - [PolicyNumber],[EffectiveDate],[ExpirationDate],[Premium],[TotalPremiumPaid],[PremiumBalance]
         
         These are the table details for Insurance db.
-        CREATE TABLE [dbo].[Segments](
-            [segment_id] [int] NOT NULL,
-            [name] [varchar](255) NOT NULL,
-            [description] [text] NULL,
-        PRIMARY KEY CLUSTERED 
-        (
-            [segment_id] ASC
-        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
-
-
-        CREATE TABLE [dbo].[Lines_of_Business](
-            [lob_id] [int] NOT NULL,
-            [segment_id] [int] NULL,
-            [name] [varchar](255) NOT NULL,
-            [description] [text] NULL,
-        PRIMARY KEY CLUSTERED 
-        (
-            [lob_id] ASC
-        )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-        GO
-
-        ALTER TABLE [dbo].[Lines_of_Business]  WITH CHECK ADD FOREIGN KEY([segment_id])
-        REFERENCES [dbo].[Segments] ([segment_id])
-        GO
         
         CREATE TABLE [dbo].[PolicyDetails](
             [PolicyID] [int] IDENTITY(1,1) NOT NULL,
@@ -73,13 +46,6 @@ sql_prompt = """
         REFERENCES [dbo].[Agency] ([pkAgency])
         GO
 
-        ALTER TABLE [dbo].[PolicyDetails]  WITH CHECK ADD  CONSTRAINT [FK_PolicyDetails_Lines_of_Business] FOREIGN KEY([LineofBusiness])
-        REFERENCES [dbo].[Lines_of_Business] ([lob_id])
-        GO
-
-        ALTER TABLE [dbo].[PolicyDetails] CHECK CONSTRAINT [FK_PolicyDetails_Lines_of_Business]
-        GO
-
 
 
         CREATE TABLE [dbo].[Coverage_Types](
@@ -92,12 +58,6 @@ sql_prompt = """
         )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
         ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
         GO
-
-        ALTER TABLE [dbo].[Coverage_Types]  WITH CHECK ADD FOREIGN KEY([line_of_business])
-        REFERENCES [dbo].[Lines_of_Business] ([lob_id])
-
-
-
 
 
         CREATE TABLE [dbo].[Coverages](
@@ -120,32 +80,6 @@ sql_prompt = """
         ALTER TABLE [dbo].[Coverages]  WITH CHECK ADD FOREIGN KEY([policy_id])
         REFERENCES [dbo].[PolicyDetails] ([PolicyID])
         GO
-
-        CREATE TABLE [dbo].[ClaimDetails](
-            ClaimID [int] IDENTITY(1,1) NOT NULL,
-            PolicyID [int] not NULL,
-            [LineofBusiness] [varchar](256) NULL,
-            [PolicyNumber] [varchar](25) NULL,
-            [TermNumber] [varchar](10) NULL,
-            [EffectiveDate] [datetime] NULL,
-            [ExpirationDate] [datetime] NULL,
-            [LossDate] datetime null,
-            [AssignedAdjuster] [varchar](256) NULL,
-            [New_Renewal] [char](1) NULL,
-            [LossAddressline1] [varchar](126) NULL,
-            [LossCity] [varchar](126) NULL,
-            [LossCounty] [varchar](126) NULL,
-            [Losszipcode] [varchar](5) NULL,
-            [LossState] [varchar](25) NULL,
-            [IncurredLosses] decimal(32,2) null,
-            [TotalExpenses] decimal(32,2) null,
-            [OutstandingReserves] decimal(32,2) null
-        PRIMARY KEY CLUSTERED 
-        (
-            ClaimID ASC
-        ),
-        FOREIGN KEY (policyid) REFERENCES policydetails (policyid)
-        ) ON [PRIMARY];
         
         CREATE TABLE Customer (
             account_number INT NOT NULL,

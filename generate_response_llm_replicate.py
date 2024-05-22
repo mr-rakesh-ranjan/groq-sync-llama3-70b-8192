@@ -10,9 +10,9 @@ def generateResponseReplicate(userPrompt, accountNumber):
     llmSql = generate_SQL_replicate(requestedPrompt)
     runnableSQl = parse_sql_new(llmSql)
     sqlResult = json.loads(execute_query_df_json(runnableSQl))
-    print(sqlResult) # for debugging only
+    #print(sqlResult) # for debugging only
     res = explain_result_replicate(sql_prompt=userPrompt, sql_result=sqlResult)
-    print(res) # for debugging only
+    #print(res) # for debugging only
     return {'data' : sqlResult, 'summary' : res}
 
 def generateActionResponseReplicate(userPrompt, accountNumber):
@@ -21,7 +21,7 @@ def generateActionResponseReplicate(userPrompt, accountNumber):
     requestedPrompt = f"{userPrompt} whose account number is {accountNumber}"
     llmSql = generate_SQL_replicate(requestedPrompt)
     runSQl = parse_sql_new(llmSql)
-    print(runSQl) # for debugging only
+    #print(runSQl) # for debugging only
     sqlResult = json.loads(execute_query_df_json(runSQl))
     # print(type(sqlResult)) # for debugging only
     enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)

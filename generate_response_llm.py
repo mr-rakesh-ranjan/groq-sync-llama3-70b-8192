@@ -29,16 +29,18 @@ def generateActionResponseGroq(userPrompt, accountNumber):
 
 
 def enhance_policy_data(sqlQuery, data, accountNumber):
-    # print("enhance") # for debugging only
+    #print("enhance") # for debugging only
     # Check if the SQL query is selecting from [dbo].[PolicyDetails]
-    # print(f'sample - {data}') # for debugging only
-    if "SELECT" in sqlQuery and "[dbo].[PolicyDetails]" in sqlQuery:
+    #print(f'sample - {data}') # for debugging only
+    #print(f"sample_query - {sqlQuery}") # for debugging only
+    if 'SELECT' in sqlQuery and 'PolicyDetails' in sqlQuery:
         # Add the actions to each policy in the data list
+        #print("inside if") # for debugging only
         for policy in data:
             if 'PolicyNumber' and 'PremiumBalance' in policy:
                 policyNumber = policy['PolicyNumber']
                 premiumBalance = policy['PremiumBalance']
-                # print(policyNumber) # for debugging only
+                #print(policyNumber) # for debugging only
                 policy['actions'] = createDynamicActions(policyNumber=policyNumber,premiumBalance=premiumBalance, accountNumber=accountNumber )
             else:
                 return data
