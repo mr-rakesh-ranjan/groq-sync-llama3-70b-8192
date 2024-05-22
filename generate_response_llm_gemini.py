@@ -42,7 +42,7 @@ def createDynamicActions(policyNumber, premiumBalance, accountNumber):
 		},
 		{ 
 			'label':'Show Coverage',
-			'url': f'/api/v1/llm/{policyNumber}/{accountNumber}/coverage-details'
+			'url': f'/api/v1/sql/{policyNumber}/{accountNumber}/coverage-details'
 		}
     ]
     return actions
