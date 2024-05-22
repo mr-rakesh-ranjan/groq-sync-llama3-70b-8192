@@ -3,7 +3,7 @@ from run_sql import execute_query_df_json
 import json
 
 def generateResponseGroq(userPrompt, accountNumber):
-    print(f"{userPrompt} \n\n account number is {accountNumber}") # for debugging only
+    # print(f"{userPrompt} \n\n account number is {accountNumber}") # for debugging only
     requestedPrompt = f"{userPrompt} whose account number is {accountNumber}"
     llmSql = generate_sql_groq(requestedPrompt)
     runSQl = parse_sql_new(llmSql)
@@ -22,13 +22,13 @@ def generateActionResponseGroq(userPrompt, accountNumber):
     # print(type(runSQl)) # for debugging only
     sqlResult = json.loads(execute_query_df_json(runSQl))
     # print(type(sqlResult)) # for debugging only
-    enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult)
+    enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)
     # print(enhanceResult) # for debugging only
     summary = explain_result_groq(sql_prompt=userPrompt, sql_result=sqlResult)
     return {'data' : enhanceResult, 'summary': summary}
 
 
-def enhance_policy_data(sqlQuery, data):
+def enhance_policy_data(sqlQuery, data, accountNumber):
     # print("enhance") # for debugging only
     # Check if the SQL query is selecting from [dbo].[PolicyDetails]
     # print(f'sample - {data}') # for debugging only
@@ -39,13 +39,13 @@ def enhance_policy_data(sqlQuery, data):
                 policyNumber = policy['PolicyNumber']
                 premiumBalance = policy['PremiumBalance']
                 # print(policyNumber) # for debugging only
-                policy['actions'] = createDynamicActions(policyNumber=policyNumber,premiumBalance=premiumBalance )
+                policy['actions'] = createDynamicActions(policyNumber=policyNumber,premiumBalance=premiumBalance, accountNumber=accountNumber )
             else:
                 return data
     # Return the modified list of dictionaries
     return data
 
-def createDynamicActions(policyNumber, premiumBalance):
+def createDynamicActions(policyNumber, premiumBalance, accountNumber):
     actions = [
         {
 			'label':'Pay',
@@ -57,7 +57,7 @@ def createDynamicActions(policyNumber, premiumBalance):
 		},
 		{ 
 			'label':'Show Coverage',
-			'url': '/api/v1/llm/polocyno/?prompt= show details of policy 12323232'
+			'url': f'/api/v1/llm/{policyNumber}/{accountNumber}/coverage-details?prompt=show me coverage details'
 		}
     ]
     return actions

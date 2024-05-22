@@ -5,7 +5,12 @@ import datetime as dt
 from run_sql import execute_query_df_json
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
-
+from generate_response_llm_replicate import generateResponseReplicate
+from dotenv import load_dotenv, find_dotenv
+import os
+# load dotenv 
+load_dotenv(find_dotenv())
+genai_provider = os.getenv('GENAI_PROVIDER')
 
 app = Flask(__name__)
 cors = CORS(app=app)
@@ -56,7 +61,10 @@ def generateResponse(accountNumber):
     if request.method == 'POST':
         data = request.get_json(force=True)
         userQuery = data['user_query']
-        return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'GROQ'):
+            return generateResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'REPLICATE'):
+            return generateResponseReplicate(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
     
@@ -66,7 +74,12 @@ def generateActionResponse(accountNumber):
     if request.method == 'POST':
         data = request.get_json(force=True)
         userQuery = data['user_query']
-        return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'GROQ'):
+            # print("groq") #for debugging Only
+            return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+        if(genai_provider == 'REPLICATE'):
+            # print("rep") # for debugging only
+            return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
     
