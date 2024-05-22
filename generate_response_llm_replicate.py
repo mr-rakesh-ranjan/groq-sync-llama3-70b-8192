@@ -15,7 +15,7 @@ def generateResponseReplicate(userPrompt, accountNumber):
     print(res) # for debugging only
     return {'data' : sqlResult, 'summary' : res}
 
-def generateActionResponseGroq(userPrompt, accountNumber):
+def generateActionResponseReplicate(userPrompt, accountNumber):
     # print("function call") # for debugging only
     # print(f"{userPrompt} \n\n account number is {accountNumber}") # for debugging only
     requestedPrompt = f"{userPrompt} whose account number is {accountNumber}"

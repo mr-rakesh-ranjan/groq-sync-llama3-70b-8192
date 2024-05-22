@@ -5,7 +5,7 @@ import datetime as dt
 from run_sql import execute_query_df_json
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
-from generate_response_llm_replicate import generateResponseReplicate
+from generate_response_llm_replicate import generateResponseReplicate, generateActionResponseReplicate
 from dotenv import load_dotenv, find_dotenv
 import os
 # load dotenv 
@@ -79,19 +79,31 @@ def generateActionResponse(accountNumber):
             return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
         if(genai_provider == 'REPLICATE'):
             # print("rep") # for debugging only
-            return generateActionResponseGroq(userPrompt=userQuery, accountNumber=accountNumber)
+            return generateActionResponseReplicate(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
     
 
-@app.route('/api/v1/llm/<policyNumber>/<accountNumber>/coverage-details', methods=['GET'])
+@app.route('/api/v1/sql/<policyNumber>/<accountNumber>/coverage-details', methods=['GET'])
 def generateCoverageDetails(policyNumber, accountNumber):
     if request.method == 'GET':
-        prompt = request.args['prompt']
-        # print(prompt) # for debugging only
-        requestedPrompt = f"{prompt} whose policy number is {policyNumber}"
-        return generateActionResponseGroq(userPrompt=requestedPrompt, accountNumber=accountNumber)
+        query = f"SELECT [c].[coverage_id], [c].[policy_id], [ct].[description] AS [coverage_type], [c].[limit], [c].[deductible] FROM [dbo].[Coverages] [c] INNER JOIN [dbo].[PolicyDetails] [pd] ON [c].[policy_id] = [pd].[PolicyID] INNER JOIN [dbo].[Customer] [cust] ON [pd].[AccountNumber] = [cust].[account_number] INNER JOIN [dbo].[Coverage_Types] [ct] ON [c].[coverage_type_id] = [ct].[coverage_type_id] WHERE [pd].[PolicyNumber] = '{policyNumber}' AND [cust].[account_number] = {accountNumber};"
+        # print(query) # for debugging only
+        data = js.loads(execute_query_df_json(query))
+        return data
+    else:
+        return jsonify({'Error' : "Method Not Allowed"})
+    
 
+@app.route('/api/v1/sql/<policyNumber>/<accountNumber>/premium-amount', methods=['GET'])
+def getPremiumAmount(accountNumber, policyNumber):
+    if(request.method == 'GET'):
+        query = f"SELECT [PremiumBalance] FROM [dbo].[PolicyDetails] AS p WHERE PolicyNumber = '{policyNumber}' AND accountNumber = {accountNumber};"
+        data = js.loads(execute_query_df_json(query))
+        return data[0]
+    else:
+        return jsonify({'Error' : "Method Not Allowed"})
+        
 
 
 
