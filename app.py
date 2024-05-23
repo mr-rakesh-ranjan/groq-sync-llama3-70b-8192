@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 import datetime as dt
-from run_sql import execute_query_df_json
+from run_sql import execute_query_df_json, get_data
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
 from generate_response_llm_replicate import generateResponseReplicate,generateActionResponseReplicate
@@ -111,6 +111,13 @@ def getPremiumAmount(accountNumber, policyNumber):
     else:
         return jsonify({'Error' : "Method Not Allowed"})
         
+@app.route('/api/v1/sql/policy-document/<accountNumber>/<policyNumber>', methods=['GET'])
+def getPolicyDocumnets(policyNumber, accountNumber):
+    if(request.method == 'GET'):
+        query = f"SELECT [p].[DocumentLink] FROM [dbo].[PolicyDocuments] as [p] INNER JOIN [dbo].[PolicyDetails] AS [pd] ON [p].[PolicyID] = [pd].[PolicyID] INNER JOIN [dbo].[Customer] AS [c] ON [c].[account_number] = [pd].[AccountNumber] WHERE [pd].[PolicyNumber] = '{policyNumber}' AND [c].[account_number] = '{accountNumber}';"
+        data = js.loads(get_data(query))
+        return data[0]
+
 
 
 
