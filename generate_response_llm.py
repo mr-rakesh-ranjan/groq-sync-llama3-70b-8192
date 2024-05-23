@@ -1,5 +1,5 @@
 from generate_sql_groq import generate_sql_groq, explain_result_groq, parse_sql_new
-from run_sql import execute_query_df_json
+from run_sql import get_data
 import json
 
 def generateResponseGroq(userPrompt, accountNumber):
@@ -7,7 +7,7 @@ def generateResponseGroq(userPrompt, accountNumber):
     requestedPrompt = f"{userPrompt} whose account number is {accountNumber}"
     llmSql = generate_sql_groq(requestedPrompt)
     runSQl = parse_sql_new(llmSql)
-    sqlResult = json.loads(execute_query_df_json(runSQl))
+    sqlResult = json.loads(get_data(runSQl))
     # print(sqlResult) # for debugging only
     res = explain_result_groq(sql_prompt=userPrompt, sql_result=sqlResult)
     # print(res) # for debugging only
@@ -20,7 +20,7 @@ def generateActionResponseGroq(userPrompt, accountNumber):
     llmSql = generate_sql_groq(requestedPrompt)
     runSQl = parse_sql_new(llmSql)
     # print(type(runSQl)) # for debugging only
-    sqlResult = json.loads(execute_query_df_json(runSQl))
+    sqlResult = json.loads(get_data(runSQl))
     # print(type(sqlResult)) # for debugging only
     enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)
     # print(enhanceResult) # for debugging only

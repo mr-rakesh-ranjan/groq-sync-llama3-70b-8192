@@ -7,9 +7,9 @@ import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
 from generate_response_llm_replicate import generateResponseReplicate,generateActionResponseReplicate
 from generate_response_llm_gemini import generateResponseGemini, generateActionResponseGemini
-
 from dotenv import load_dotenv, find_dotenv
 import os
+
 # load dotenv 
 load_dotenv(find_dotenv())
 genai_provider = os.getenv('GENAI_PROVIDER')
@@ -116,5 +116,3 @@ def getPremiumAmount(accountNumber, policyNumber):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
-    
