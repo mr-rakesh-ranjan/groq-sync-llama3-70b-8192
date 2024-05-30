@@ -118,6 +118,17 @@ def getPolicyDocumnets(policyNumber, accountNumber):
         data = js.loads(get_data(query))
         return data[0]
 
+# Apis for webhooks 
+@app.route('/api/v2/account-details', methods=['POST'])
+def accountDetails():
+    if request.method =='POST':
+        data = request.get_json(force=True, silent=True)
+        account_number = data['account_number']
+        query = f"SELECT * FROM [dbo].[customer] WHERE account_number = {int(account_number)}"
+        db_data = js.loads(get_data(query))
+        return db_data[0]['customer_name']
+
+
 
 
 

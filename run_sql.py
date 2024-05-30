@@ -40,7 +40,7 @@ import os
 
 # load dotenv 
 load_dotenv(find_dotenv())
-
+# print(os.getenv('DB_SERVER'))
 con_string = 'DRIVER=ODBC Driver 18 for SQL Server;'+'SERVER='+os.getenv('DB_SERVER') +';'+'Database='+os.getenv('DB_NAME') +';'+'UID='+os.getenv('DB_USERNAME') +';' +'PWD='+os.getenv('DB_PWD') +';'
 # print(con_string) #for debugging only
 global conn 
