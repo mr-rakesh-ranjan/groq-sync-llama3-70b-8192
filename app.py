@@ -123,6 +123,7 @@ def getPolicyDocumnets(policyNumber, accountNumber):
 def accountDetails():
     if request.method =='POST':
         data = request.get_json(force=True, silent=True)
+        print(data) #for  debugging 
         account_number = data['account_number']
         query = f"SELECT * FROM [dbo].[customer] WHERE account_number = {int(account_number)}"
         db_data = js.loads(get_data(query))
