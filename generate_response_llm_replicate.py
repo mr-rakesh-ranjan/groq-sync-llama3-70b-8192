@@ -1,6 +1,6 @@
 from generate_sql_replicate import generate_SQL_replicate, explain_result_replicate
 from generate_response_llm import parse_sql_new, enhance_policy_data
-from run_sql import get_data
+from run_sql import get_data, execute_query_df_json
 import json
 
 
@@ -22,7 +22,8 @@ def generateActionResponseReplicate(userPrompt, accountNumber):
     llmSql = generate_SQL_replicate(requestedPrompt)
     runSQl = parse_sql_new(llmSql)
     #print(runSQl) # for debugging only
-    sqlResult = json.loads(get_data(runSQl))
+    # sqlResult = json.loads(get_data(runSQl))
+    sqlResult = json.loads(execute_query_df_json(runSQl))
     # print(type(sqlResult)) # for debugging only
     enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)
     # print(enhanceResult) # for debugging only

@@ -85,7 +85,7 @@ def generateActionResponse(accountNumber):
             # print("rep") # for debugging only
             return generateActionResponseReplicate(userPrompt=userQuery, accountNumber=accountNumber)
         if(genai_provider == 'GEMINI'):
-                # print("gem") # for debugging only
+            # print("gem") # for debugging only
             return generateActionResponseGemini(userPrompt=userQuery, accountNumber=accountNumber)
     else:
         return "Please use POST method"
