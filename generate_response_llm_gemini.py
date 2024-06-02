@@ -1,6 +1,6 @@
 from generate_sql_gemini import nl_sql_nl_gemini, explain_result_gemini, parse_triple_quotes
 import json
-from run_sql import get_data
+from run_sql import get_data, execute_query_df_json
 from datetime import datetime
 
 def generateResponseGemini(userPrompt, accountNumber):
@@ -15,7 +15,7 @@ def generateActionResponseGemini(userPrompt, accountNumber):
     requestedPrompt = f"{userPrompt} whose account number is {accountNumber}"
     llmSql = nl_sql_nl_gemini(requestedPrompt)
     runSQl = parse_triple_quotes(llmSql)
-    sqlResult = json.loads(get_data(runSQl))
+    sqlResult = json.loads(execute_query_df_json(runSQl))
     enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)
     summary = explain_result_gemini(sql_prompt=userPrompt, sql_result=sqlResult)
     return {'data' : enhanceResult, 'summary': summary}
