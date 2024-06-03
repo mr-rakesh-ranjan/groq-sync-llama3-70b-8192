@@ -115,7 +115,7 @@ def getPremiumAmount(accountNumber, policyNumber):
 def getPolicyDocumnets(policyNumber, accountNumber):
     if(request.method == 'GET'):
         query = f"SELECT [p].[DocumentLink] FROM [dbo].[PolicyDocuments] as [p] INNER JOIN [dbo].[PolicyDetails] AS [pd] ON [p].[PolicyID] = [pd].[PolicyID] INNER JOIN [dbo].[Customer] AS [c] ON [c].[account_number] = [pd].[AccountNumber] WHERE [pd].[PolicyNumber] = '{policyNumber}' AND [c].[account_number] = '{accountNumber}';"
-        data = js.loads(get_data(query))
+        data = js.loads(execute_query_df_json(query))
         return data[0]
 
 # Apis for webhooks 
@@ -128,6 +128,13 @@ def accountDetails():
         query = f"SELECT * FROM [dbo].[customer] WHERE account_number = {int(account_number)}"
         db_data = js.loads(get_data(query))
         return db_data[0]['customer_name']
+
+@app.route('/loadchat/<account_number>/<session_id>', methods=['GET'])
+def accounctChatLoad(account_number, session_id):
+    if request.method == 'GET':
+        query = f" SELECT[account_number],[session_id],[chat_time],[system_or_user],[chat_message] FROM [dbo].[chat_messages] WHERE account_number = {account_number} and session_id= '{session_id}' ORDER by chat_time ASC"
+        result = js.loads(execute_query_df_json(query))
+        return result
 
 
 
