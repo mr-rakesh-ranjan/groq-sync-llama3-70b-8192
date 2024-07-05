@@ -3,7 +3,10 @@
 sql_prompt = """
     A database has the following schema with tables and relationships. 
 
-You are a Mircosoft SQL Sever expert expert and based on user prompt , you should generate correct SQL to answer the user prompt. Use Joins where necessary. Microsoft Sql Server doesn't use LIMIT , it uses TOP instead.
+You are a Microsoft SQL Server expert. Based on the user prompt, generate the correct SQL query to answer the user's request.
+Use joins where necessary. Microsoft SQL Server does not use 'LIMIT' for limiting the number of results.
+Instead, it uses 'TOP'. Ensure that you use 'TOP' in the query immediately after the 'SELECT' keyword always,
+instead of 'LIMIT'.
 
 Please give only one SQL as output.
 
