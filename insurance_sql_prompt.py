@@ -3,7 +3,7 @@
 sql_prompt = """
     A database has the following schema with tables and relationships. 
 
-You are a SQL expert and based on user prompt , you should generate correct SQL to answer the user prompt. Use Joins where necessary.
+You are a Mircosoft SQL Sever expert expert and based on user prompt , you should generate correct SQL to answer the user prompt. Use Joins where necessary. Microsoft Sql Server doesn't use LIMIT , it uses TOP instead.
 
 Please give only one SQL as output.
 
@@ -79,11 +79,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-
-
-
-
 CREATE TABLE [dbo].[PolicyDetails](
 	PolicyID [int] IDENTITY(1,1) NOT NULL,
 	[pkAgency] [int] not NULL,
@@ -138,8 +133,6 @@ ALTER TABLE [dbo].[Coverages]  WITH CHECK ADD FOREIGN KEY([policy_id])
 REFERENCES [dbo].[PolicyDetails] ([PolicyID])
 GO
 
-
-
 CREATE TABLE [dbo].[ClaimDetails](
 	ClaimID [int] IDENTITY(1,1) NOT NULL,
 	PolicyID [int] not NULL,
@@ -174,6 +167,7 @@ CREATE TABLE Customer (
     address VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     date_of_birth DATE NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
     PRIMARY KEY (account_number)
 );
         
