@@ -16,6 +16,7 @@ def generateActionResponseGemini(userPrompt, accountNumber):
     llmSql = nl_sql_nl_gemini(requestedPrompt)
     runSQl = parse_triple_quotes(llmSql)
     sqlResult = json.loads(execute_query_df_json(runSQl))
+    print(f"response of sql: {runSQl} \n\n Response is : {sqlResult} ")
     enhanceResult = enhance_policy_data(sqlQuery=runSQl, data=sqlResult, accountNumber=accountNumber)
     summary = explain_result_gemini(sql_prompt=userPrompt, sql_result=sqlResult)
     return {'data' : enhanceResult, 'summary': summary}
