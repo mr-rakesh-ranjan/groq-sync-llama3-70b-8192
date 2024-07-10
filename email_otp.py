@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 import os
 appPwd = os.getenv("APP_PWD")
-# appPwd1 = os.getenv("APP_PWD1")
+appPwd1 = os.getenv("APP_PWD1")
 # print(appPwd)
 # print(appPwd1)
 
