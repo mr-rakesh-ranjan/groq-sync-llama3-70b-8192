@@ -167,11 +167,10 @@ def validate_otp():
         data = request.get_json(force=True, silent=True)
         print(data) #for  debugging
         user_otp = data['otp']
-        if session:
-            if int(user_otp) == int(session['current_otp']):
-                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
-            else:
-                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+        if int(user_otp) == int(session['current_otp']):
+            return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+        else:
+            return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
 
 
 if __name__ == '__main__':
