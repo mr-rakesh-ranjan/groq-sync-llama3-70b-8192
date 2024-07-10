@@ -1,6 +1,7 @@
 # restAPI for applications
 from flask import Flask, jsonify, request, session
 from flask_cors import CORS, cross_origin
+# from flask_api import status 
 import datetime as dt
 from email_otp import sendEmailVerificationRequest_smtp2go
 from run_sql import execute_query_df_json, get_data
@@ -155,25 +156,22 @@ def emailVerification(account_number,email):
             # current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
             current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
             session['current_otp'] = current_otp
-            print(session['current_otp'])
-            return jsonify({'status' : 'success', 'message' : f'otp is {current_otp}'})
+            print(f"Otp saved in session : {session['current_otp']}")
+            return jsonify({'status' : 'SUCCESS', 'message' : f'otp is {current_otp}'}), 200
         else:
-            return jsonify({'status' : 'success', 'message' : 'Email does not exist'})
+            return jsonify({'status' : 'NOT FOUND', 'message' : 'Email does not exist'}), 404
     
 @app.route('/api/v1/validate-otp', methods=['POST'])
 def validate_otp():
-    current_user_otp = session['current_otp']
-    print(f"current user otp : {current_user_otp}")
-
     if request.method == 'POST':
         data = request.get_json(force=True, silent=True)
         print(data) #for  debugging
         user_otp = data['otp']
-        if int(user_otp) == int(current_user_otp):
-            session['current_otp'] = "null"
-            return jsonify({'status' : 'success', 'message' : 'Email verified successfully'})
-        else:
-            return jsonify({'status' : 'success', 'message' : 'Email verification failed'})
+        if session:
+            if int(user_otp) == int(session['current_otp']):
+                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+            else:
+                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
 
 
 if __name__ == '__main__':
