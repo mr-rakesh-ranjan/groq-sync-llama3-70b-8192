@@ -14,6 +14,7 @@ import os
 # load dotenv 
 load_dotenv(find_dotenv())
 genai_provider = os.getenv('GENAI_PROVIDER')
+secret_key = os.getenv('SECRET_KEY')
 
 app = Flask(__name__)
 cors = CORS(app=app)
@@ -174,6 +175,6 @@ def validate_otp():
 
 
 if __name__ == '__main__':
-    app.secret_key = "rakesh_ranjan"
+    app.secret_key = secret_key
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=9900)

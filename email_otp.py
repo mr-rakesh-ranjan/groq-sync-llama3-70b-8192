@@ -6,9 +6,9 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 import os
 appPwd = os.getenv("APP_PWD")
-appPwd1 = os.getenv("APP_PWD1")
+# appPwd1 = os.getenv("APP_PWD1")
 # print(appPwd)
-print(appPwd1)
+# print(appPwd1)
 
 
 def generate_otp():
@@ -46,10 +46,3 @@ def sendEmailVerificationRequest_smtp2go(receiver, message):
     server.quit()
     return curr_otp
 
-# app.config['MAIL_SERVER'] = 'mail.smtp2go.com'
-# app.config['MAIL_PORT'] = 2525
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USE_SSL'] = False
-# app.config['MAIL_USERNAME'] = 'insurance.chat'
-# app.config['MAIL_PASSWORD'] = 'L8138M7kIS56P1ii'
-# app.config['MAIL_DEFAULT_SENDER'] = ('Insurance Chatbot', 'sujit_s@pursuitsoftware.biz')
