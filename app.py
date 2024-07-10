@@ -1,7 +1,8 @@
 # restAPI for applications
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_cors import CORS, cross_origin
 import datetime as dt
+from email_otp import sendEmailVerificationRequest_smtp2go
 from run_sql import execute_query_df_json, get_data
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
@@ -17,6 +18,7 @@ genai_provider = os.getenv('GENAI_PROVIDER')
 app = Flask(__name__)
 cors = CORS(app=app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['MAIL_USERNAME'] = 'insurance.chat'
 
 
 # for debugging only
@@ -135,10 +137,43 @@ def accounctChatLoad(account_number, session_id):
         query = f" SELECT[account_number],[session_id],[chat_time],[system_or_user],[chat_message] FROM [dbo].[chat_messages] WHERE account_number = {account_number} and session_id= '{session_id}' ORDER by chat_time ASC"
         result = js.loads(execute_query_df_json(query))
         return result
+    
+# Email verification System
+@app.route('/api/v1/email-verification/<account_number>/<email>', methods=['POST'])
+def emailVerification(account_number,email):
+    if request.method == 'POST':
+        query = f"SELECT * FROM [dbo].[customer] WHERE [customer_email] = '{email}' AND [account_number] = '{account_number}'"
+        db_data = js.loads(execute_query_df_json(query))
+        if db_data:
+            receiver_email = db_data[0]['customer_email']
+            # print(receiver_email) #for debuggiing only
+            custom_message = f"Hello {db_data[0]['customer_name']}...  \n\nWelcome to the Insurence NLQ..."
+            from email_otp import sendEmailVerificationRequest
+            # current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
+            current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
+            session['current_otp'] = current_otp
+            print(session['current_otp'])
+            return jsonify({'status' : 'success', 'message' : f'otp is {current_otp}'})
+        else:
+            return jsonify({'status' : 'success', 'message' : 'Email does not exist'})
+    
+@app.route('/api/v1/validate-otp', methods=['POST'])
+def validate_otp():
+    current_user_otp = session['current_otp']
+    print(f"current user otp : {current_user_otp}")
 
-
-
+    if request.method == 'POST':
+        data = request.get_json(force=True, silent=True)
+        print(data) #for  debugging
+        user_otp = data['otp']
+        if int(user_otp) == int(current_user_otp):
+            session['current_otp'] = "null"
+            return jsonify({'status' : 'success', 'message' : 'Email verified successfully'})
+        else:
+            return jsonify({'status' : 'success', 'message' : 'Email verification failed'})
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.secret_key = "rakesh_ranjan"
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.run(debug=True, port=9900)
