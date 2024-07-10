@@ -20,6 +20,8 @@ app = Flask(__name__)
 cors = CORS(app=app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['MAIL_USERNAME'] = 'insurance.chat'
+app.config['SESSION_TYPE'] = 'memcached'
+app.config['SECRET_KEY'] = secret_key
 
 
 # for debugging only
@@ -175,6 +177,4 @@ def validate_otp():
 
 
 if __name__ == '__main__':
-    app.secret_key = secret_key
-    app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=9900)
