@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, session
 from flask_cors import CORS, cross_origin
 # from flask_api import status 
 import datetime as dt
-from email_otp import sendEmailVerificationRequest_smtp2go
+from email_otp import sendEmailVerificationRequest
 from run_sql import execute_query_df_json, get_data
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
@@ -21,9 +21,8 @@ app = Flask(__name__)
 cors = CORS(app=app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['MAIL_USERNAME'] = 'insurance.chat'
-app.config['SESSION_TYPE'] = 'memcached'
+app.config['SESSION_TYPE'] = 'redis'
 app.config['SECRET_KEY'] = secret_key
-
 
 # for debugging only
 @app.route('/', methods = ['GET', 'POST'])
@@ -152,7 +151,6 @@ def emailVerification(account_number,email):
             receiver_email = db_data[0]['customer_email']
             # print(receiver_email) #for debuggiing only
             custom_message = f"Hello {db_data[0]['customer_name']}...  \n\nWelcome to the Insurence NLQ..."
-            from email_otp import sendEmailVerificationRequest
             # current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
             current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
             session['current_otp'] = current_otp
@@ -167,10 +165,17 @@ def validate_otp():
         data = request.get_json(force=True, silent=True)
         print(data) #for  debugging
         user_otp = data['otp']
-        if int(user_otp) == int(session['current_otp']):
-            return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
-        else:
-            return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+        try:
+            if int(user_otp) == int(session['current_otp']):
+                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+            else:
+                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+        except Exception as e:
+            print(e)
+        finally :
+            session.pop('current_otp', None)
+
+        
 
 
 if __name__ == '__main__':
