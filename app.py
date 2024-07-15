@@ -3,7 +3,6 @@ from flask import Flask, jsonify, request, session
 from flask_cors import CORS, cross_origin
 # from flask_api import status 
 import datetime as dt
-from email_otp import sendEmailVerificationRequest
 from run_sql import execute_query_df_json, get_data
 import json as js
 from generate_response_llm import generateResponseGroq, generateActionResponseGroq
@@ -151,6 +150,7 @@ def emailVerification(account_number,email):
             receiver_email = db_data[0]['customer_email']
             # print(receiver_email) #for debuggiing only
             custom_message = f"Hello {db_data[0]['customer_name']}...  \n\nWelcome to the Insurence NLQ..."
+            from email_otp import sendEmailVerificationRequest
             # current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
             current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
             session['current_otp'] = current_otp
