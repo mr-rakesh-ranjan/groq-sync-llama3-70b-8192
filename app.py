@@ -159,24 +159,22 @@ def emailVerification(account_number,email):
         else:
             return jsonify({'status' : 'NOT FOUND', 'message' : 'Email does not exist'}), 404
     
-@app.route('/api/v1/validate-otp', methods=['POST'])
-def validate_otp():
+@app.route('/api/v1/validate-otp/<user_otp>', methods=['POST'])
+def validate_otp(user_otp):
     if request.method == 'POST':
-        data = request.get_json()
-        print(f"otp from request body {data}") #for  debugging
-        user_otp = data['otp']
+        # data = request.get_json()
+        # print(f"otp from request body {data}") #for  debugging
+        # user_otp = data['otp']
+        print(user_otp)
         try:
-            if session:
-                current_otp = session['current_otp']
-                print(f"{current_otp} and its type {type(current_otp)}")
-                if int(user_otp) == int(current_otp):
-                    return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
-                else:
-                    return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+            current_otp = session['current_otp']
+            print(f"{current_otp} and its type {type(current_otp)}")
+            if int(user_otp) == int(current_otp):
+                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+            else:
+                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
         except Exception as e:
             print(e)
-        finally :
-            session.pop('current_otp', None)
 
         
 
