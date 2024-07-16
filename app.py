@@ -151,8 +151,8 @@ def emailVerification(account_number,email):
             # print(receiver_email) #for debuggiing only
             custom_message = f"Hello {db_data[0]['customer_name']}...  \n\nWelcome to the Insurence NLQ..."
             from email_otp import sendEmailVerificationRequest
-            # current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
-            current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
+            current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
+            # current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
             session['current_otp'] = current_otp
             print(f"Otp saved in session : {session['current_otp']}")
             return jsonify({'status' : 'SUCCESS', 'message' : f'otp is {current_otp}'}), 200
@@ -162,14 +162,17 @@ def emailVerification(account_number,email):
 @app.route('/api/v1/validate-otp', methods=['POST'])
 def validate_otp():
     if request.method == 'POST':
-        data = request.get_json(force=True, silent=True)
-        print(data) #for  debugging
+        data = request.get_json()
+        print(f"otp from request body {data}") #for  debugging
         user_otp = data['otp']
         try:
-            if int(user_otp) == int(session['current_otp']):
-                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
-            else:
-                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+            if session:
+                current_otp = session['current_otp']
+                print(f"{current_otp} and its type {type(current_otp)}")
+                if int(user_otp) == int(current_otp):
+                    return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+                else:
+                    return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
         except Exception as e:
             print(e)
         finally :
