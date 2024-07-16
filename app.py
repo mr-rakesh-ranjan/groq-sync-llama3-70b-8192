@@ -170,13 +170,11 @@ def validate_otp(user_otp):
             current_otp = session['current_otp']
             print(f"{current_otp} and its type {type(current_otp)}")
             if int(user_otp) == int(current_otp):
-                return jsonify({'status' : 'SUCCESS', 'message' : 'Email verified successfully'}), 200
+                return {'status' : 'SUCCESS', 'message' : 'Email verified successfully'}, 200
             else:
-                return jsonify({'status' : 'Bad Request', 'message' : 'Email verification failed'}), 400
+                return {'status' : 'Bad Request', 'message' : 'Email verification failed'}, 400
         except Exception as e:
             print(e)
-
-        
 
 
 if __name__ == '__main__':
