@@ -22,6 +22,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['MAIL_USERNAME'] = 'insurance.chat'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SECRET_KEY'] = secret_key
+app.config['SESSION_PERMANENT'] = True
 
 # for debugging only
 @app.route('/', methods = ['GET', 'POST'])
@@ -153,10 +154,10 @@ def emailVerification(account_number,email):
             from email_otp import sendEmailVerificationRequest
             current_otp = sendEmailVerificationRequest(receiver="rakesh_rk@pursuitsoftware.biz",message=custom_message)
             # current_otp = sendEmailVerificationRequest(receiver=receiver_email, message=custom_message)
-            # session['current_otp'] = current_otp #for session
-            # print(f"Otp saved in session : {session['current_otp']}") # for session
-            with open('otp.txt', 'w') as f:
-                f.write(current_otp)
+            session['current_otp'] = current_otp #for session
+            print(f"Otp saved in session : {session['current_otp']}") # for session
+            # with open('otp.txt', 'w') as f:
+            #     f.write(current_otp)
             return jsonify({'status' : 'SUCCESS', 'message' : f'otp is {current_otp}'}), 200
         else:
             return jsonify({'status' : 'NOT FOUND', 'message' : 'Email does not exist'}), 404
@@ -169,10 +170,11 @@ def validate_otp(user_otp):
         # user_otp = data['otp']
         print(user_otp)
         try:
-            # current_otp = session['current_otp'] # for session
+            print("1--> in try block")
+            current_otp = session['current_otp'] # for session
             # current_otp = 123456 # for static otp
-            reader = open('otp.txt', 'r')
-            current_otp = reader.read()
+            # reader = open('otp.txt', 'r')
+            # current_otp = reader.read()
             print(f"{current_otp} and its type {type(current_otp)}")
             if int(user_otp) == int(current_otp):
                 return {'status' : 'SUCCESS', 'message' : 'Email verified successfully'}, 200
@@ -180,8 +182,8 @@ def validate_otp(user_otp):
                 return {'status' : 'Bad Request', 'message' : 'Email verification failed'}, 400
         except Exception as e:
             print(e)
-        finally:
-            reader.close()
+        # finally:
+        #     reader.close()
 
 
 if __name__ == '__main__':
